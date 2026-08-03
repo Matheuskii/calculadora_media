@@ -23,6 +23,31 @@ Desenvolver uma aplicação flutter capaz de receber o nome de um aluno, calcula
 - SnackBar
 
 
+### Criar o Projeto FLutter
+
+
+```bash
+flutter create media_escolar
+
+```
+
+Entre na pasta do projeto:
+```bash
+  cd media_escolar
+```
+
+Abra o projeto no Visual Studio Code:
+```bash
+  code .
+```
+
+Execute o projeto:
+```bash
+  flutter run
+```
+
+Resultado:
+![imagem](./imagens/Captura%20de%20tela%202026-08-03%20093352.png)
 ### Checklist
 
 - [X] Criar o Projeto Flutter 
