@@ -31,14 +31,74 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
   final TextEditingController nota1Controller = TextEditingController();
   final TextEditingController nota2Controller = TextEditingController();
   final TextEditingController nota3Controller = TextEditingController();
+  final TextEditingController nota4Controller = TextEditingController();
 
   String nomeAluno = '';
   String situacao = '';
   double media = 0;
 
-
   @override
   Widget build(BuildContext context) {
+    void mostrarMensagem(String msg) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+    }
+
+    void calcularMedia() {
+      String nome = nomeController.text.trim();
+
+      double? nota1 = double.tryParse(
+        nota1Controller.text.replaceAll(',', '.'),
+      );
+      double? nota2 = double.tryParse(
+        nota2Controller.text.replaceAll(',', '.'),
+      );
+      double? nota3 = double.tryParse(
+        nota3Controller.text.replaceAll(',', '.'),
+      );
+      double? nota4 = double.tryParse(
+        nota4Controller.text.replaceAll(',', '.'),
+      );
+
+      if (nome.isEmpty ||
+          nota1 == null ||
+          nota2 == null ||
+          nota3 == null ||
+          nota4 == null) {
+        mostrarMensagem("Preencha todos os camposs corretamente");
+        return;
+      }
+      if (nota1 < 0 ||
+          nota1 > 10 ||
+          nota2 < 0 ||
+          nota2 > 10 ||
+          nota3 < 0 ||
+          nota3 > 10 ||
+          nota4 < 0 ||
+          nota4 > 10) {
+        mostrarMensagem("As notas devem estar entre 0 e 10");
+        return;
+      }
+
+      double mediaCalculada = (nota1 + nota2 + nota3 + nota4) / 4;
+
+      String situacaoCalculada;
+
+      switch (mediaCalculada) {
+        case >= 7:
+          situacaoCalculada = "APROVADO";
+        case >= 5:
+          situacaoCalculada = "RECUPERAÇÃO";
+        default:
+          situacaoCalculada = "REPROVADO";
+      }
+
+      setState(() {
+        nomeAluno = nome;
+        situacao = situacaoCalculada;
+        media = mediaCalculada;
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculador de Média'),
@@ -49,21 +109,162 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(
-              Icons.school,
-              size: 80
-            ),
+            const Icon(Icons.school, size: 80),
             const SizedBox(height: 10),
-            const Text('Média Escolar',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize:26,
-              fontWeight: FontWeight.bold
+            const Text(
+              'Média Escolar',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+            const Text(
+              'Digite o nome e as três notas do aluno',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 25),
+            TextField(
+              controller: nomeController,
+              decoration: const InputDecoration(
+                labelText: 'Nome do Aluno',
+                hintText: 'Matheus',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: nota1Controller,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Nota 1',
+                hintText: 'Digite uma nota de 0 a 10',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.note),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: nota2Controller,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Nota 2',
+                hintText: 'Digite uma nota de 0 a 10',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.note),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: nota3Controller,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Nota 3',
+                hintText: 'Digite uma nota de 0 a 10',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.note),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            TextField(
+              controller: nota4Controller,
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: const InputDecoration(
+                labelText: 'Nota 4',
+                hintText: 'Digite uma nota de 0 a 10',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.note),
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            ElevatedButton.icon(
+              onPressed: calcularMedia,
+              icon: const Icon(Icons.calculate),
+              label: const Text('Calcular média'),
+            ),
+
+            const SizedBox(height: 10),
+
+            OutlinedButton.icon(
+              onPressed: limparCampos,
+              icon: const Icon(Icons.delete),
+              label: const Text("Limpar"),
+            ),
+
+            const SizedBox(height: 25),
+
+            if (situacao.isNotEmpty)
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Icon(escolherIcone(), size: 60),
+                      Text(
+                        nomeAluno,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Média: ${media.toStringAsFixed(1)}',
+                        style: const TextStyle(fontSize: 20),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        situacao,
+
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
-      )
+      ),
     );
+  }
+
+  void limparCampos() {
+    nomeController.clear();
+    nota1Controller.clear();
+    nota2Controller.clear();
+    nota3Controller.clear();
+    nota4Controller.clear();
+
+    setState(() {
+      nomeAluno = "";
+      media = 0;
+      situacao = '';
+    });
+  }
+
+  IconData escolherIcone() {
+    switch (situacao) {
+      case "APROVADO":
+        return Icons.check_circle;
+      case "RECUPERAÇÃO":
+        return Icons.warning;
+      case "REPROVADO":
+        return Icons.sms_failed;
+      default:
+        return Icons.drive_file_rename_outline;
+    }
   }
 }
