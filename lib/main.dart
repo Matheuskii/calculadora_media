@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -36,6 +38,11 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
   String nomeAluno = '';
   String situacao = '';
   double media = 0;
+  double maiorNota = 0;
+  double menorNota = 0;
+  double faltante = 0;
+  List<double> lista = [];
+  late bool toPassThenote = media >= 7;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +66,12 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
         nota4Controller.text.replaceAll(',', '.'),
       );
 
+      double maiorNotaCalculada = 0;
+      double menorNotaCalculada = 0;
+      double? faltanteCalculado = 0;
+
+      int frequencia = 0;
+
       if (nome.isEmpty ||
           nota1 == null ||
           nota2 == null ||
@@ -79,6 +92,8 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
         return;
       }
 
+      lista.addAll([nota1, nota2, nota3, nota4]);
+
       double mediaCalculada = (nota1 + nota2 + nota3 + nota4) / 4;
 
       String situacaoCalculada;
@@ -86,16 +101,27 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
       switch (mediaCalculada) {
         case >= 7:
           situacaoCalculada = "APROVADO";
-        case >= 5:
+        case <= 5:
           situacaoCalculada = "RECUPERAÇÃO";
         default:
           situacaoCalculada = "REPROVADO";
       }
 
+      maiorNotaCalculada = lista.reduce(max);
+      print(maiorNotaCalculada);
+      menorNotaCalculada = lista.reduce(min);
+
+      if (!toPassThenote) {
+        double faltanteCalculado = 7 - mediaCalculada;
+        print(faltanteCalculado);
+      }
       setState(() {
         nomeAluno = nome;
         situacao = situacaoCalculada;
         media = mediaCalculada;
+        maiorNota = maiorNotaCalculada;
+        menorNota = menorNotaCalculada;
+        faltante = faltanteCalculado;
       });
     }
 
@@ -141,7 +167,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                 labelText: 'Nota 1',
                 hintText: 'Digite uma nota de 0 a 10',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: Icon(Icons.edit),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -154,7 +180,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                 labelText: 'Nota 2',
                 hintText: 'Digite uma nota de 0 a 10',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: Icon(Icons.edit),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -167,7 +193,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                 labelText: 'Nota 3',
                 hintText: 'Digite uma nota de 0 a 10',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: Icon(Icons.edit),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -180,7 +206,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                 labelText: 'Nota 4',
                 hintText: 'Digite uma nota de 0 a 10',
                 floatingLabelBehavior: FloatingLabelBehavior.always,
-                prefixIcon: Icon(Icons.note),
+                prefixIcon: Icon(Icons.edit),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -231,6 +257,31 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Maior nota calculada: ${maiorNota.toStringAsFixed(1)}',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Menor nota calculada: ${menorNota.toStringAsFixed(1)}',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      if (!toPassThenote)
+                          Text(
+                            'Falta isso seu bosta: ${menorNota.toStringAsFixed(1)}',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                     ],
                   ),
                 ),
