@@ -66,7 +66,7 @@ Resultado:
 ### Desafio
 
 - [X] Adicionar uma quarta nota
-- [ ] Mostrar a maior nota
-- [ ] Mostrar a menor nota
-- [ ] Informar quantos pontos faltaran para a aprovação
-- [ ] Reprovar o aluno que tiver uma frequência menor que 75%
+- [X] Mostrar a maior nota
+- [X] Mostrar a menor nota
+- [X] Informar quantos pontos faltaran para a aprovação
+- [X] Reprovar o aluno que tiver uma frequência menor que 75%

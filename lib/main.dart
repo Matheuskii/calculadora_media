@@ -34,6 +34,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
   final TextEditingController nota2Controller = TextEditingController();
   final TextEditingController nota3Controller = TextEditingController();
   final TextEditingController nota4Controller = TextEditingController();
+  final TextEditingController frequenciaController = TextEditingController();
 
   String nomeAluno = '';
   String situacao = '';
@@ -41,8 +42,18 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
   double maiorNota = 0;
   double menorNota = 0;
   double faltante = 0;
+  int frequencia = 0;
+
   List<double> lista = [];
   late bool toPassThenote = media >= 7;
+  late bool presente = frequencia >= 75;
+
+  String textoFormatado() {
+    if (presente) {
+      return 'Frequência: $frequencia';
+    }
+    return 'Frequência abaixo da média: $frequencia';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +81,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
       double menorNotaCalculada = 0;
       double? faltanteCalculado = 0;
 
-      int frequencia = 0;
+      int? frequenciaCalculada = int.tryParse(frequenciaController.text);
 
       if (nome.isEmpty ||
           nota1 == null ||
@@ -115,6 +126,18 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
         double faltanteCalculado = 7 - mediaCalculada;
         print(faltanteCalculado);
       }
+
+      if (frequenciaCalculada! > 100 || frequenciaCalculada < 0) {
+        mostrarMensagem("Valor de frêquuencia n permirtido");
+        return;
+      }
+
+      if (frequenciaCalculada < 75) {
+        situacaoCalculada = "REPROVADO";
+      } else {
+        situacaoCalculada = "APROVADO";
+      }
+
       setState(() {
         nomeAluno = nome;
         situacao = situacaoCalculada;
@@ -122,6 +145,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
         maiorNota = maiorNotaCalculada;
         menorNota = menorNotaCalculada;
         faltante = faltanteCalculado;
+        frequencia = frequenciaCalculada;
       });
     }
 
@@ -212,6 +236,21 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
             ),
 
             const SizedBox(height: 15),
+            TextField(
+              controller: frequenciaController,
+              keyboardType: TextInputType.number,
+              maxLength: 3,
+              decoration: const InputDecoration(
+                labelText: 'Frequência',
+                suffixText: '%',
+                hintText: '0',
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 15),
 
             ElevatedButton.icon(
               onPressed: calcularMedia,
@@ -275,13 +314,22 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
                       ),
                       const SizedBox(height: 10),
                       if (!toPassThenote)
-                          Text(
-                            'Falta isso seu bosta: ${menorNota.toStringAsFixed(1)}',
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          'Falta isso seu bosta: ${menorNota.toStringAsFixed(1)}',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
                           ),
+                        ),
+                      const SizedBox(height: 10),
+
+                      Text(
+                        textoFormatado(),
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -298,11 +346,14 @@ class _MediaEscolarPageState extends State<MediaEscolarPage> {
     nota2Controller.clear();
     nota3Controller.clear();
     nota4Controller.clear();
+    frequenciaController.clear();
 
     setState(() {
       nomeAluno = "";
       media = 0;
       situacao = '';
+      faltante = 0;
+      
     });
   }
 
